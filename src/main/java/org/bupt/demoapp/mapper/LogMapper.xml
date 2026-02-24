@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.bupt.demoapp.mapper.LogMapper">
+
+    <!--
+        插入一条聊天日志
+        对应 Java 实体：org.bupt.demoapp.entity.ChatLog
+        对应数据库表：chat_log
+    -->
+    <insert id="insert" parameterType="org.bupt.demoapp.entity.ChatLog">
+        INSERT INTO chat_log (
+            log_id,
+            user_id,
+            memory_id,
+            raw_text,
+            intent,
+            create_time,
+            event_date
+        )
+        VALUES (
+                   #{logId},
+                   #{userId},
+                   #{memoryId},
+                   #{rawText},
+                   #{intent},
+                   #{createTime},
+                   #{eventDate}
+               )
+    </insert>
+
+    <!-- 查询某个用户的所有不同的 memoryId
+         通过 memory_id 的前缀（userId部分）来过滤
+         memory_id 格式：userId:conversationId
+    -->
+    <select id="findDistinctMemoryIdsByUserId" resultType="String">
+        SELECT DISTINCT memory_id
+        FROM chat_log
+        WHERE SUBSTRING_INDEX(memory_id, ':', 1) = #{userId}
+        ORDER BY memory_id
+    </select>
+
+    <!-- 查询某个 memoryId 的最后一条消息 -->
+    <select id="findLastMessageByMemoryId" resultType="org.bupt.demoapp.entity.ChatLog">
+        SELECT log_id, memory_id, raw_text, intent, create_time, event_date
+        FROM chat_log
+        WHERE memory_id = #{memoryId}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 根据 logId 查询日志详情 -->
+    <select id="findByLogId" resultType="org.bupt.demoapp.entity.ChatLog">
+        SELECT log_id, user_id, memory_id, raw_text, intent, create_time, event_date
+        FROM chat_log
+        WHERE log_id = #{logId}
+    </select>
+
+    <!-- 根据多个 logId 批量查询日志 -->
+    <select id="findByLogIds" resultType="org.bupt.demoapp.entity.ChatLog">
+        SELECT log_id, user_id, memory_id, raw_text, intent, create_time, event_date
+        FROM chat_log
+        WHERE log_id IN
+        <foreach collection="logIds" item="logId" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+        ORDER BY event_date DESC
+    </select>
+
+    <!-- 根据多个 logId 和时间范围查询日志 -->
+    <select id="findByLogIdsAndTimeRange" resultType="org.bupt.demoapp.entity.ChatLog">
+        SELECT log_id, user_id, memory_id, raw_text, intent, create_time, event_date
+        FROM chat_log
+        WHERE log_id IN
+        <foreach collection="logIds" item="logId" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+        AND event_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY event_date DESC
+    </select>
+
+    <!-- 根据用户ID和时间范围查询所有日志 -->
+    <select id="findByUserIdAndTimeRange" resultType="org.bupt.demoapp.entity.ChatLog">
+        SELECT log_id, user_id, memory_id, raw_text, intent, create_time, event_date
+        FROM chat_log
+        WHERE user_id = #{userId}
+          AND event_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY event_date ASC
+    </select>
+
+    <!-- 插入一条聊天日志（用于测试） -->
+    <insert id="insertChatLog" parameterType="org.bupt.demoapp.entity.ChatLog">
+        INSERT INTO chat_log (
+            log_id,
+            user_id,
+            memory_id,
+            raw_text,
+            intent,
+            create_time,
+            event_date
+        )
+        VALUES (
+            #{logId},
+            #{userId},
+            #{memoryId},
+            #{rawText},
+            #{intent},
+            #{createTime},
+            #{eventDate}
+        )
+    </insert>
+
+    <!-- 根据多个 logId 批量删除日志（用于测试清理） -->
+    <delete id="deleteByLogIds">
+        DELETE FROM chat_log
+        WHERE log_id IN
+        <foreach collection="logIds" item="logId" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+
+</mapper>

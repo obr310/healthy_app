@@ -1,0 +1,66 @@
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: ${DASHSCOPE_API_KEY}
+      model-name: qwen-plus
+      log-requests: true
+      log-responses: true
+
+    streaming-chat-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: ${DASHSCOPE_API_KEY}
+      model-name: qwen-plus
+      log-requests: true
+      log-responses: true
+
+    embedding-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: ${DASHSCOPE_API_KEY}
+      model-name: text-embedding-v4
+      log-requests: true
+      log-responses: true
+      max-segments-per-batch: 10
+
+  milvus:
+    host: localhost
+    port: 19530
+    username: root
+    password:
+    # 用户日志 collection
+    user-log-collection-name: chat_log_vectors
+    # 知识库 collection
+    knowledge-collection-name: knowledge_base_vectors
+    dimension: 1024
+
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/health_app?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password:
+
+  security:
+    user:
+      name: disabled
+      password: disabled
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    # LangChain4j 框架日志
+    dev.langchain4j: debug
+    # 应用业务日志
+    org.bupt.demoapp: info
+    # Spring 框架日志
+    org.springframework: info
+    # SQL 日志（可选，用于调试）
+    org.bupt.demoapp.mapper: debug
