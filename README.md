@@ -20,13 +20,13 @@
 
 ## 环境要求
 
-- Java 17+
-- Maven 3.6+
-- MySQL 8.0+
-- Redis 6.0+
-- Milvus 2.3+
+- Java JDK 21
+Spring Boot	3.3.6
+LangChain4j	1.0.1-beta6
+MySQL	8.0.41 (structured logs and history)
+Redis	7.2.1 (session context and session IDs)
+Milvus	2.6.7 (knowledge_base_vectors / chat_log_vectors)
 
-## 快速开始
 
 ### 1. 克隆项目
 
