@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Health Assistant</string>
+    
+    <!-- Login Screen -->
+    <string name="login_title">Health Assistant</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_error_empty">Please enter username and password</string>
+    <string name="login_error_failed">Login failed</string>
+    <string name="login_error_http">HTTP error %1$d\nPlease check:\n1. Backend is running on port 8080\n2. API path is /auth/login\n\nDetails: %2$s</string>
+    <string name="login_error_connection">Cannot connect to server\nPlease confirm:\n1. Backend service is started\n2. Emulator network is normal\n3. Using 10.0.2.2 address</string>
+    <string name="login_error_generic">Error: %1$s\n%2$s</string>
+    
+    <!-- Conversation List Screen -->
+    <string name="conversation_list_title">Health Assistant</string>
+    <string name="conversation_list_welcome">Welcome, %1$s</string>
+    <string name="conversation_list_logout">Logout</string>
+    <string name="conversation_list_new">New Conversation</string>
+    <string name="conversation_list_empty">No conversations yet</string>
+    <string name="conversation_list_create_first">Create your first conversation</string>
+    
+    <!-- Time Format -->
+    <string name="time_just_now">Just now</string>
+    <string name="time_minutes_ago">%1$d minutes ago</string>
+    <string name="time_hours_ago">%1$d hours ago</string>
+    
+    <!-- Chat Screen -->
+    <string name="chat_online">Online</string>
+    <string name="chat_back">Back</string>
+    <string name="chat_input_hint">Type a message...</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_welcome">Hello! I\'m your Health Assistant AI. How can I help you today?</string>
+    <string name="chat_error_send">Sorry, I couldn\'t process your message. Please try again.</string>
+    <string name="chat_error_network">Network error. Please check your connection and try again.</string>
+    <string name="chat_ai_avatar">AI</string>
+    <string name="chat_user_avatar">Me</string>
+</resources>
