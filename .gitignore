@@ -43,24 +43,17 @@ application-local.yaml
 application-local.yml
 application-local.properties
 
-# 日志文件
-logs/
-*.log
+# MCP Server 文件
+mcp_server/
+!mcp_server/server.py
 
-# 数据库文件
-*.db
-*.sqlite
-
-### 敏感信息保护 ###
-# 环境变量文件
-.env
-.env.local
-.env.*.local
-
-# 本地配置文件
-application-local.yaml
-application-local.yml
-application-local.properties
+# 证书和密钥文件
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+http_ca.crt
 
 # 日志文件
 logs/
@@ -69,3 +62,9 @@ logs/
 # 数据库文件
 *.db
 *.sqlite
+
+# macOS 敏感文件
+.DS_Store
+.AppleDouble
+.LSOverride
+

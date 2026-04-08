@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <!-- 全局配置 -->
+    <TestPlan name="demoapp压力测试计划" guiclass="TestPlanGui" testclass="TestPlan" testname="demoapp压力测试计划" enabled="true">
+      <stringProp name="TestPlan.comments">demoapp健康管理与AI对话系统压测计划 - 3个核心场景</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="host" elementType="Argument">
+            <stringProp name="Argument.name">host</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="port" elementType="Argument">
+            <stringProp name="Argument.name">port</stringProp>
+            <stringProp name="Argument.value">8080</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+
+      <!-- HTTP请求默认值 -->
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP请求默认值" enabled="true">
+        <elementProp name="HTTPRequest.others" elementType="KVPairs" guiclass="KVPairsGui" testclass="ConfigTestElement" testname="HTTP请求默认值" enabled="true">
+          <collectionProp name="KVPairs">
+            <elementProp name="http.default.protocol" elementType="Argument">
+              <stringProp name="Argument.name">http.default.protocol</stringProp>
+              <stringProp name="Argument.value">http</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">${host}</stringProp>
+        <stringProp name="HTTPSampler.port">${port}</stringProp>
+        <stringProp name="HTTPSampler.protocol">http</stringProp>
+        <boolProp name="HTTPSampler.image_parser">false</boolProp>
+        <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+        <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+        <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+        <elementProp name="HTTPsampler.BasePath" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="HTTPsampler.BasePath" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+      </ConfigTestElement>
+      <hashTree/>
+
+      <!-- HTTP Header Manager -->
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.name">Content-Type</stringProp>
+            <stringProp name="Header.value">application/json</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+
+      <!-- ==================== 场景1：主接口基础并发测试 ==================== -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="场景1：/chat主接口基础并发测试" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">120</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <!-- 子控制器：10并发 -->
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="10并发用户" enabled="true"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - RECORD意图" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-${__time()}-10","msg":"今天我的血压是 120/80，帮我记录一下"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="聚合报告" enabled="true">
+              <boolProp name="saveGraphicsIdentity">true</boolProp>
+              <objProp>
+                <name>saveConfig</name>
+                <value class="SaveService">
+                  <stringProp name="SaveAction.saveFrequency">false</stringProp>
+                  <stringProp name="SaveAction.saveZeroCounters">true</stringProp>
+                  <stringProp name="SaveAction.saveTimestamp">false</stringProp>
+                  <stringProp name="SaveAction.saveThreadCounts">true</stringProp>
+                  <stringProp name="SaveAction.saveSampleCount">true</stringProp>
+                  <stringProp name="SaveAction.saveLatency">true</stringProp>
+                  <stringProp name="SaveAction.saveBytes">true</stringProp>
+                  <stringProp name="SaveAction.saveResponseCode">true</stringProp>
+                  <stringProp name="SaveAction.saveResponseMessage">true</stringProp>
+                  <stringProp name="SaveAction.saveRequest">true</stringProp>
+                  <stringProp name="SaveAction.saveResponseData">false</stringProp>
+                  <stringProp name="SaveAction.saveAssertionResults">true</stringProp>
+                  <stringProp name="SaveAction.saveSubSamples">false</stringProp>
+                  <stringProp name="SaveAction.saveSamplerData">false</stringProp>
+                </value>
+              </objProp>
+              <stringProp name="filename"></stringProp>
+            </ResultCollector>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <hashTree/>
+
+        <!-- 20并发 -->
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="20并发用户" enabled="true"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - RECORD意图" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-${__time()}-20","msg":"今天我的血压是 120/80，帮我记录一下"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <hashTree/>
+
+        <!-- 40并发 -->
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="40并发用户" enabled="true"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - RECORD意图" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-${__time()}-40","msg":"今天我的血压是 120/80，帮我记录一下"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <hashTree/>
+
+      </hashTree>
+      <!-- 场景1结束 -->
+
+      <!-- ==================== 场景2：多意图功能测试 ==================== -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="场景2：多意图功能测试" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">20</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">180</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <!-- 随机控制器：多意图分布 -->
+        <RandomController guiclass="RandomControllerGui" testclass="RandomController" testname="随机控制器" enabled="true">
+          <intProp name="RandomController.weight">100</intProp>
+        </RandomController>
+        <hashTree>
+
+          <!-- RECORD意图：20% -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - RECORD意图(20%)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-record-${__time()}","msg":"今天我的血压是 120/80，帮我记录一下"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+
+          <!-- QUERY意图：20% -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - QUERY意图(20%)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-query-${__time()}","msg":"我上周的运动记录是什么？"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+
+          <!-- SUMMARY意图：20%（异步） -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - SUMMARY意图(20%)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-summary-${__time()}","msg":"帮我总结一下这周的饮食情况"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+
+          <!-- QA意图：20%（异步） -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - QA意图(20%)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-qa-${__time()}","msg":"高血压患者饮食应该注意什么？"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+
+          <!-- PLAN意图：20%（最重，异步） -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - PLAN意图(20%)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-plan-${__time()}","msg":"帮我制定一个一周的健康计划，包括饮食和运动"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+
+        </hashTree>
+
+        <!-- 聚合报告 -->
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="聚合报告-场景2" enabled="true">
+          <boolProp name="saveGraphicsIdentity">true</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SaveService">
+              <stringProp name="SaveAction.saveFrequency">false</stringProp>
+              <stringProp name="SaveAction.saveZeroCounters">true</stringProp>
+              <stringProp name="SaveAction.saveTimestamp">false</stringProp>
+              <stringProp name="SaveAction.saveThreadCounts">true</stringProp>
+              <stringProp name="SaveAction.saveSampleCount">true</stringProp>
+              <stringProp name="SaveAction.saveLatency">true</stringProp>
+              <stringProp name="SaveAction.saveBytes">true</stringProp>
+              <stringProp name="SaveAction.saveResponseCode">true</stringProp>
+              <stringProp name="SaveAction.saveResponseMessage">true</stringProp>
+              <stringProp name="SaveAction.saveRequest">true</stringProp>
+              <stringProp name="SaveAction.saveResponseData">false</stringProp>
+              <stringProp name="SaveAction.saveAssertionResults">true</stringProp>
+              <stringProp name="SaveAction.saveSubSamples">false</stringProp>
+              <stringProp name="SaveAction.saveSamplerData">false</stringProp>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+      </hashTree>
+      <!-- 场景2结束 -->
+
+      <!-- ==================== 场景3：异步任务链路测试 ==================== -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="场景3：异步任务链路测试" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">20</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">300</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <!-- 任务提交：仅5% -->
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="任务提交(5%)" enabled="true">
+          <intProp name="ThroughputController.mode">1</intProp>
+          <boolProp name="ThroughputController.per_thread">false</boolProp>
+          <intProp name="ThroughputController.throughput">5</intProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /chat - 提交异步任务" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="JSON Body" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.allow_stackable">false</boolProp>
+                  <boolProp name="HTTPArgument.use_equal">true</boolProp>
+                  <stringProp name="Argument.value">{"memoryId":"test-task-${__time()}","msg":"帮我总结一下这周的饮食情况"}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">true</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <hashTree/>
+
+        <!-- 任务查询：95% -->
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="任务查询(95%)" enabled="true">
+          <intProp name="ThroughputController.mode">1</intProp>
+          <boolProp name="ThroughputController.per_thread">false</boolProp>
+          <intProp name="ThroughputController.throughput">95</intProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /chat/tasks/{taskId}" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="taskId" elementType="Argument">
+                  <stringProp name="Argument.name">taskId</stringProp>
+                  <stringProp name="Argument.value">task-placeholder</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">/chat/tasks/${taskId}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.post_body_raw">false</boolProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <hashTree/>
+
+        <!-- 聚合报告 -->
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="聚合报告-场景3" enabled="true">
+          <boolProp name="saveGraphicsIdentity">true</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SaveService">
+              <stringProp name="SaveAction.saveFrequency">false</stringProp>
+              <stringProp name="SaveAction.saveZeroCounters">true</stringProp>
+              <stringProp name="SaveAction.saveTimestamp">false</stringProp>
+              <stringProp name="SaveAction.saveThreadCounts">true</stringProp>
+              <stringProp name="SaveAction.saveSampleCount">true</stringProp>
+              <stringProp name="SaveAction.saveLatency">true</stringProp>
+              <stringProp name="SaveAction.saveBytes">true</stringProp>
+              <stringProp name="SaveAction.saveResponseCode">true</stringProp>
+              <stringProp name="SaveAction.saveResponseMessage">true</stringProp>
+              <stringProp name="SaveAction.saveRequest">true</stringProp>
+              <stringProp name="SaveAction.saveResponseData">false</stringProp>
+              <stringProp name="SaveAction.saveAssertionResults">true</stringProp>
+              <stringProp name="SaveAction.saveSubSamples">false</stringProp>
+              <stringProp name="SaveAction.saveSamplerData">false</stringProp>
+            </value>
+          </objProp>
+          <stringProp name="stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+      </hashTree>
+      <!-- 场景3结束 -->
+
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

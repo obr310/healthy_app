@@ -34,6 +34,16 @@ langchain4j:
     dimension: 1024
 
 
+elasticsearch:
+  scheme: https
+  host: localhost
+  port: 9201
+  username: elastic
+  password: "En8=M6diVNsOEedBg3Ig"
+  ca-cert-path: "./http_ca.crt"
+  knowledge-index: knowledge_base_bm25
+  user-log-index: user_log_bm25
+
 spring:
   data:
     redis:
@@ -50,17 +60,26 @@ spring:
       name: disabled
       password: disabled
 
+  mvc:
+    async:
+      request-timeout: 120000  # 120秒，覆盖默认的30秒，避免计划生成（多轮LLM调用）超时
+
 mybatis:
+  mapper-locations: classpath*:org/bupt/demoapp/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
 
 logging:
+  file:
+    name: logs/planner-agent.log
   level:
-    # LangChain4j 框架日志
+    # LangChain4j 框架日志（DEBUG 可看到 LLM 的 tool call 决策、请求/响应完整内容）
     dev.langchain4j: debug
+    # Plan Agent 专项日志（Tool 调用链、耗时、入参出参）
+    org.bupt.demoapp.agent: debug
     # 应用业务日志
     org.bupt.demoapp: info
     # Spring 框架日志
     org.springframework: info
-    # SQL 日志（可选，用于调试）
+    # SQL 日志
     org.bupt.demoapp.mapper: debug

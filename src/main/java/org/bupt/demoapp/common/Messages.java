@@ -37,6 +37,10 @@ public class Messages {
     
     // Error Messages
     public static final String ERROR_SERVICE_BUSY = "Sorry, the service is temporarily busy. Please try again later";
+    public static final String ERROR_TOO_MANY_CONCURRENT_REQUESTS = "Sorry, the service is temporarily busy. Please try again later";
+    public static final String ERROR_FUNCTION_BUSY = "Sorry, the service is temporarily busy. Please try again later";
+    public static final String ERROR_RATE_LIMITED = "Sorry, your request is too frequent. Please try again in a moment";
+    public static final String ERROR_SESSION_BUSY = "You have a request in progress. Please wait for it to complete";
     
     // Conversation Titles
     public static final String CONVERSATION_TITLE_PREFIX = "Conversation ";
@@ -51,4 +55,5 @@ public class Messages {
         // Utility class, prevent instantiation
     }
 }
+
 

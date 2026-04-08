@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.bupt.demoapp.mapper.PlanMapper">
+
+    <!-- 插入一条新计划 -->
+    <insert id="insert" parameterType="org.bupt.demoapp.entity.Plan">
+        INSERT INTO plan (
+            plan_id,
+            user_id,
+            plan_type,
+            plan_content,
+            plan_status,
+            create_time,
+            update_time
+        ) VALUES (
+            #{planId},
+            #{userId},
+            #{planType},
+            #{planContent},
+            #{planStatus},
+            #{createTime},
+            #{updateTime}
+        )
+    </insert>
+
+    <!-- 根据计划ID查询计划 -->
+    <select id="findById" resultType="org.bupt.demoapp.entity.Plan">
+        SELECT
+            plan_id,
+            user_id,
+            plan_type,
+            plan_content,
+            plan_status,
+            create_time,
+            update_time
+        FROM plan
+        WHERE plan_id = #{planId}
+    </select>
+
+    <!-- 更新计划内容和状态 -->
+    <update id="update" parameterType="org.bupt.demoapp.entity.Plan">
+        UPDATE plan
+        SET
+            plan_content = #{planContent},
+            plan_status  = #{planStatus},
+            update_time  = #{updateTime}
+        WHERE plan_id = #{planId}
+    </update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

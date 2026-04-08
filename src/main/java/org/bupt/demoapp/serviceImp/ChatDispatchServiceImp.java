@@ -1,15 +1,17 @@
 package org.bupt.demoapp.serviceImp;
 
 import org.bupt.demoapp.aiservice.IntentService;
+import org.bupt.demoapp.agent.PlannerContext;
 import org.bupt.demoapp.common.Messages;
 import org.bupt.demoapp.dto.ChatResponse;
 import org.bupt.demoapp.entity.Intent;
 import org.bupt.demoapp.service.ChatDispatchService;
 import org.bupt.demoapp.service.LogQueryService;
 import org.bupt.demoapp.service.LogSummaryService;
-import org.bupt.demoapp.service.QAService;
-import org.bupt.demoapp.service.SaveChatHistoryService;
 import org.bupt.demoapp.service.LogRecordService;
+import org.bupt.demoapp.service.QAService;
+import org.bupt.demoapp.service.PlanService;
+import org.bupt.demoapp.service.SaveChatHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class ChatDispatchServiceImp implements ChatDispatchService {
     private LogSummaryService logSummaryService;
     @Autowired
     private QAService qaService;
+    @Autowired
+    private PlanService planService;
 
     @Override
     public ChatResponse handle(String memoryId, String msg) {
@@ -59,41 +63,8 @@ public class ChatDispatchServiceImp implements ChatDispatchService {
                 return errorResponse;
             }
 
-            ChatResponse response;
-            //用户意图为记录,存储信息->生成回复
-            if (intent == Intent.RECORD) {
-                logger.info(">>> 意图为 RECORD，开始记录日志 - memoryId: {}", memoryId);
-                response = logRecordService.record(memoryId, msg);
-                logger.info(">>> 日志记录完成 - logId: {}", response.getLogId());
-            } else if (intent == Intent.QUERY) {
-                logger.info(">>> 意图为 QUERY，开始查询日志 - memoryId: {}", memoryId);
-                response = logQueryService.queryChat(memoryId, msg);
-                logger.info(">>> 查询完成");
-            } else if (intent == Intent.SUMMARY) {
-                logger.info(">>> 意图为 SUMMARY，开始生成总结 - memoryId: {}", memoryId);
-                response = logSummaryService.summarize(memoryId, msg);
-                logger.info(">>> 总结生成完成");
-            } else if (intent == Intent.QA) {
-                logger.info(">>> 意图为 QA，开始健康知识问答 - memoryId: {}", memoryId);
-                response = qaService.heathQA(memoryId, msg);
-                logger.info(">>> QA回答完成");
-            } else if (intent == Intent.UNKNOWN) {
-                logger.warn(">>> 意图为 UNKNOWN，用户输入无法识别 - memoryId: {}, msg: {}", memoryId, msg);
-                // 提示用户规范输入
-                String reply = Messages.CHAT_UNKNOWN_INTENT;
-                response = new ChatResponse(null, Intent.UNKNOWN.name(), reply, false, false);
-            } else {
-                // 其他未处理的意图类型
-                logger.info(">>> 意图为 {}，使用默认回复", intent);
-                String reply = Messages.CHAT_UNKNOWN_INTENT;
-                response = new ChatResponse(null, intent.name(), reply, false, false);
-            }
-
-            saveChatHistoryService.saveAiMessage(memoryId, response.getReply());
-            logger.info(">>> AI回复已保存到展示历史 - memoryId: {}, reply: {}", memoryId, response.getReply());
-
-            logger.info(">>> 聊天消息处理完成 - intent: {}, logId: {}", intent, response.getLogId());
-            return response;
+            // 使用三参数方法继续处理
+            return handle(memoryId, msg, intent);
 
         } catch (Exception e) {
             // 捕获所有未处理的异常，返回友好的错误消息
@@ -108,7 +79,59 @@ public class ChatDispatchServiceImp implements ChatDispatchService {
             return errorResponse;
         }
     }
+
+    @Override
+    public ChatResponse handle(String memoryId, String msg, Intent intent) {
+        if (intent == null) {
+            intent = Intent.UNKNOWN;
+        }
+
+        // 为 PLAN 意图设置 PlannerContext
+        if (intent == Intent.PLAN) {
+            PlannerContext.setMemoryId(memoryId);
+        }
+
+        ChatResponse response;
+
+        //用户意图为记录,存储信息->生成回复
+        if (intent == Intent.RECORD) {
+            logger.info(">>> 意图为 RECORD，开始记录日志 - memoryId: {}", memoryId);
+            response = logRecordService.record(memoryId, msg);
+            logger.info(">>> 日志记录完成 - logId: {}", response.getLogId());
+        } else if (intent == Intent.QUERY) {
+            logger.info(">>> 意图为 QUERY，开始查询日志 - memoryId: {}", memoryId);
+            response = logQueryService.queryChat(memoryId, msg);
+            logger.info(">>> 查询完成");
+        } else if (intent == Intent.SUMMARY) {
+            logger.info(">>> 意图为 SUMMARY，开始生成总结 - memoryId: {}", memoryId);
+            response = logSummaryService.summarize(memoryId, msg);
+            logger.info(">>> 总结生成完成");
+        } else if (intent == Intent.QA) {
+            logger.info(">>> 意图为 QA，开始健康知识问答 - memoryId: {}", memoryId);
+            response = qaService.heathQA(memoryId, msg);
+            logger.info(">>> QA回答完成");
+        } else if (intent == Intent.PLAN) {
+            logger.info(">>> 意图为 PLAN，开始生成健康计划 - memoryId: {}", memoryId);
+            String planReply = planService.plan(memoryId, msg);
+            response = new ChatResponse(null, Intent.PLAN.name(), planReply, false, false);
+            logger.info(">>> 计划生成完成");
+            PlannerContext.clear();
+        } else if (intent == Intent.UNKNOWN) {
+            logger.warn(">>> 意图为 UNKNOWN，用户输入无法识别 - memoryId: {}, msg: {}", memoryId, msg);
+            // 提示用户规范输入
+            String reply = Messages.CHAT_UNKNOWN_INTENT;
+            response = new ChatResponse(null, Intent.UNKNOWN.name(), reply, false, false);
+        } else {
+            // 其他未处理的意图类型
+            logger.info(">>> 意图为 {}，使用默认回复", intent);
+            String reply = Messages.CHAT_UNKNOWN_INTENT;
+            response = new ChatResponse(null, intent.name(), reply, false, false);
+        }
+
+        saveChatHistoryService.saveAiMessage(memoryId, response.getReply());
+        logger.info(">>> AI回复已保存到展示历史 - memoryId: {}, reply: {}", memoryId, response.getReply());
+
+        logger.info(">>> 聊天消息处理完成 - intent: {}, logId: {}", intent, response.getLogId());
+        return response;
+    }
 }
-    
-
-

@@ -59,7 +59,7 @@ public class RetrievalRelevanceTest {
     private static final double MIN_SCORE = 0.3;
 
     // 核心测试数据: 50条真实健康日志
-    private static final List<TestLog> CORE_LOGS = Arrays.asList(
+    public static final List<TestLog> CORE_LOGS = Arrays.asList(
         // 饮食类 (1-15)
         new TestLog(1L, "Had oatmeal with blueberries, scrambled eggs and whole milk for breakfast", LocalDate.of(2026, 2, 15), "diet"),
         new TestLog(2L, "Ate grilled chicken breast salad with quinoa and brown rice for lunch", LocalDate.of(2026, 2, 15), "diet"),
@@ -120,7 +120,7 @@ public class RetrievalRelevanceTest {
     );
 
     // 干扰数据: 150条相似但不相关的日志 (模拟噪声)
-    private static List<TestLog> generateNoiseData() {
+    public static List<TestLog> generateNoiseData() {
         List<TestLog> noiseLogs = new ArrayList<>();
         long startId = 1001L;
         
@@ -194,7 +194,7 @@ public class RetrievalRelevanceTest {
     }
 
     // 测试查询: 20个问题及其预期相关的日志ID
-    private static final List<TestQuery> TEST_QUERIES = Arrays.asList(
+    public static final List<TestQuery> TEST_QUERIES = Arrays.asList(
         // 饮食相关查询 (1-7)
         new TestQuery("What did I eat for breakfast?", Arrays.asList(1L, 5L, 9L, 10L)),
         new TestQuery("What did I have for lunch?", Arrays.asList(2L, 8L, 11L)),
@@ -270,18 +270,18 @@ public class RetrievalRelevanceTest {
             List<TestLog> batch = allLogs.subList(i, end);
             
             for (TestLog testLog : batch) {
-                ChatLog chatLog = new ChatLog();
-                chatLog.setLogId(testLog.logId);
-                chatLog.setUserId(TEST_USER_ID);
-                chatLog.setMemoryId(TEST_USER_ID + ":0");
-                chatLog.setRawText(testLog.content);
-                chatLog.setIntent("RECORD");
-                chatLog.setEventDate(testLog.eventDate);
-                chatLog.setCreateTime(LocalDateTime.now());
+            ChatLog chatLog = new ChatLog();
+            chatLog.setLogId(testLog.logId);
+            chatLog.setUserId(TEST_USER_ID);
+            chatLog.setMemoryId(TEST_USER_ID + ":0");
+            chatLog.setRawText(testLog.content);
+            chatLog.setIntent("RECORD");
+            chatLog.setEventDate(testLog.eventDate);
+            chatLog.setCreateTime(LocalDateTime.now());
 
-                logMapper.insertChatLog(chatLog);
-                insertedLogIds.add(testLog.logId);
-            }
+            logMapper.insertChatLog(chatLog);
+            insertedLogIds.add(testLog.logId);
+        }
             System.out.println("  已插入 " + end + "/" + allLogs.size() + " 条到 MySQL");
         }
         System.out.println("✓ MySQL数据插入完成\n");
@@ -336,7 +336,7 @@ public class RetrievalRelevanceTest {
         System.out.println("========================================\n");
 
         List<QueryResult> results = new ArrayList<>();
-        
+
         // 对每个查询执行检索
         for (int i = 0; i < TEST_QUERIES.size(); i++) {
             TestQuery query = TEST_QUERIES.get(i);
@@ -363,7 +363,7 @@ public class RetrievalRelevanceTest {
             System.out.println("  检索: " + retrievedIds.size() + " 条, 相关: " + relevantCount + " 条, " +
                 "准确率: " + String.format("%.1f%%", result.getPrecision() * 100));
         }
-        
+
         // 计算统计指标
         RetrievalStats stats = calculateStats(results);
 
@@ -494,7 +494,7 @@ public class RetrievalRelevanceTest {
 
     // ==================== 辅助类 ====================
 
-    static class TestLog {
+    public static class TestLog {
         final Long logId;
         final String content;
         final LocalDate eventDate;
@@ -508,7 +508,7 @@ public class RetrievalRelevanceTest {
         }
     }
 
-    static class TestQuery {
+    public static class TestQuery {
         final String question;
         final List<Long> relevantLogIds;
 
@@ -518,7 +518,7 @@ public class RetrievalRelevanceTest {
         }
     }
 
-    static class QueryResult {
+    public static class QueryResult {
         final String question;
         final int retrievedCount;
         final int relevantCount;
@@ -539,7 +539,7 @@ public class RetrievalRelevanceTest {
         }
     }
 
-    static class RetrievalStats {
+    public static class RetrievalStats {
         final int totalRetrieved;
         final int totalRelevant;
         final int totalExpected;

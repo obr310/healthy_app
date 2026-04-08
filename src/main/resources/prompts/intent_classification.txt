@@ -5,9 +5,9 @@ Please classify the user input into one of the following intents (choose only on
 	•	QUERY: User is requesting to retrieve past records or querying about a specific time period, trends, or statistics
 	•	SUMMARY: User is requesting a summary of all activities over a past period, such as: overall situation in the past three days, diet in January-February, recent exercise trends
 	•	QA: User is asking health-related questions
+	•	PLAN: User is requesting to create, make, or formulate a health-related plan or schedule, such as: help me make a diet plan, create an exercise plan for me, I want a sleep improvement plan
 	•	UNKNOWN: Intent cannot be determined
 
-Rules:
 	•	Return only the intent name.
 	•	Do not return explanations.
 	•	Do not return any additional text.

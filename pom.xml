@@ -103,16 +103,24 @@
             <version>${langchain4j.version}</version>
         </dependency>
 
-        <!-- Cohere Reranker -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-cohere</artifactId>
-            <version>${langchain4j.version}</version>
-        </dependency>
+
         <!-- 加密 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Elasticsearch Java Client  -->
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version> 8.17.0</version>
+        </dependency>
+        <!-- ES 底层 REST client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
+            <version> 8.17.0</version>
         </dependency>
 
     </dependencies>

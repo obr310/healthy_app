@@ -299,9 +299,7 @@ public class MedlinePlusXmlParser {
             String singleFilePath = "/Users/fangjing/Downloads/health_topics_cleaned.txt";
             parser.exportToSingleFile(topics, singleFilePath);
             
-            // 4. 可选：导出为多个文件（便于分批处理）
-            // String outputDir = "/Users/fangjing/Downloads/health_topics";
-            // parser.exportToMultipleFiles(topics, outputDir);
+
             
             System.out.println("\n✓ 处理完成！");
             
