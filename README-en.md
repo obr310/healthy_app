@@ -2,6 +2,8 @@
 
 An intelligent health assistant application built on LangChain4j and Milvus, supporting personalized health log recording and intelligent Q&A.
 
+## Front code now moved to https://github.com/obr310/healthy-front.git
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)
